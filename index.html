@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>UBCT - United Bank Chain Token | Stablecoin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sdk.moonpay.com/v2/moonpay.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .gradient-bg { background: linear-gradient(135deg, #0B132B 0%, #1C2541 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); }
+        .btn-primary { background: linear-gradient(90deg, #008080 0%, #20B2AA 100%); transition: all 0.2s ease; }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 10px 25px -5px rgba(0, 128, 128, 0.4); }
+        .lang-btn { transition: all 0.2s; padding: 6px 12px; border-radius: 40px; background: rgba(255,255,255,0.05); }
+        .lang-btn.active { background: #008080; color: white; }
+    </style>
+</head>
+<body class="gradient-bg text-white">
+
+    <header class="fixed top-0 left-0 w-full z-50 bg-black/30 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-5 py-4 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center font-bold text-xl">UBCT</div>
+                <span class="font-bold text-xl tracking-tight">United Bank Chain Token</span>
+            </div>
+            <div class="flex flex-wrap gap-2" id="language-switcher"></div>
+        </div>
+    </header>
+
+    <main class="pt-28 pb-16 px-5">
+        <div class="container mx-auto max-w-6xl">
+            <div class="text-center mb-12">
+                <div class="inline-block px-4 py-1 rounded-full bg-teal-500/20 text-teal-300 text-sm font-medium mb-4">💎 Stablecoin</div>
+                <h1 id="hero-title" class="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-white via-teal-200 to-teal-400 bg-clip-text text-transparent mb-5">United Bank Chain Token</h1>
+                <p id="hero-desc" class="text-gray-300 text-lg max-w-2xl mx-auto">Fully reserved stablecoin pegged 1:1 to USD. Backed by USDC, SOL, and liquid assets.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                <div class="glass-card rounded-2xl p-6 text-center">
+                    <p class="text-gray-400 text-sm uppercase tracking-wide mb-1">Peg</p>
+                    <p class="text-3xl font-bold">1 UBCT = $1 USD</p>
+                    <p class="text-xs text-teal-300 mt-2">Fully backed 1:1</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center">
+                    <p class="text-gray-400 text-sm uppercase tracking-wide mb-1">Total Supply</p>
+                    <p class="text-3xl font-bold">10,000,000,000 <span class="text-sm">UBCT</span></p>
+                    <p class="text-xs text-teal-300 mt-2">Demand-based (mint/burn)</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center">
+                    <p class="text-gray-400 text-sm uppercase tracking-wide mb-1">Reserves</p>
+                    <p class="text-3xl font-bold">$10B+</p>
+                    <p class="text-xs text-teal-300 mt-2">USDC + SOL + UCBT</p>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-5 md:p-8 mb-16 border border-teal-500/30">
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="flex-1 text-center lg:text-left">
+                        <div class="inline-block px-3 py-1 rounded-full bg-green-500/20 text-green-300 text-xs font-mono mb-3">💳 BUY UBCT</div>
+                        <h2 id="buy-title" class="text-2xl md:text-3xl font-bold mb-3">Buy UBCT with Bank Card</h2>
+                        <p id="buy-desc" class="text-gray-300 mb-4">Purchase UBCT stablecoin directly using Visa, Mastercard, Apple Pay, or Google Pay.</p>
+                        <div class="flex flex-wrap gap-2 justify-center lg:justify-start">
+                            <span class="text-xs bg-white/5 px-3 py-1 rounded-full">🔒 1:1 USD peg</span>
+                            <span class="text-xs bg-white/5 px-3 py-1 rounded-full">⚡ Instant settlement</span>
+                            <span class="text-xs bg-white/5 px-3 py-1 rounded-full">🏦 Bank-grade</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 w-full max-w-sm">
+                        <div class="bg-black/40 rounded-2xl p-5 border border-white/10">
+                            <label class="block text-sm font-medium text-gray-300 mb-2" id="amount-label">Amount (USD)</label>
+                            <div class="flex gap-3 mb-4">
+                                <input type="number" id="fiat-amount" value="100" step="10" class="w-full bg-black/60 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-teal-500">
+                                <button id="buy-btn" class="btn-primary px-6 py-3 rounded-xl font-bold whitespace-nowrap">Buy UBCT</button>
+                            </div>
+                            <p id="price-hint" class="text-xs text-gray-400 text-center">1 UBCT = $1.00 USD</p>
+                            <div id="moonpay-container" class="mt-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-3xl mb-3">🏦</div>
+                    <h3 id="util-1-title" class="text-xl font-bold mb-2">Stable Value</h3>
+                    <p id="util-1-desc" class="text-gray-400 text-sm">Always 1 UBCT = $1 USD. No volatility, perfect for daily transactions.</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-3xl mb-3">💧</div>
+                    <h3 id="util-2-title" class="text-xl font-bold mb-2">Liquidity Provider</h3>
+                    <p id="util-2-desc" class="text-gray-400 text-sm">Provide liquidity to earn fees while maintaining stable value.</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-3xl mb-3">🔄</div>
+                    <h3 id="util-3-title" class="text-xl font-bold mb-2">Cross-border Payments</h3>
+                    <p id="util-3-desc" class="text-gray-400 text-sm">Send value globally in seconds with near-zero fees.</p>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6">
+                <h3 id="info-title" class="text-xl font-bold mb-4">🔗 Token Contract & Resources</h3>
+                <div class="space-y-2 text-sm break-all">
+                    <div><span class="text-gray-400">Mint Address (Solana):</span> <code class="bg-black/40 px-2 py-1 rounded text-teal-300">J3Usczsn5c6YvymTxtGwFToMACdje7vPLeAXQqqELqab</code></div>
+                    <div><span class="text-gray-400">Meteora Pool:</span> <a href="#" class="text-teal-400 hover:underline">Coming soon</a></div>
+                    <div><span class="text-gray-400">Ecosystem:</span> <a href="#" class="text-teal-400 hover:underline">Chain Bank Portal</a></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10 py-8 text-center text-gray-500 text-sm">
+        <p>© 2026 United Bank Chain Token — Part of Chain Bank Ecosystem. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const translations = {
+            en: {
+                hero_title: "United Bank Chain Token", hero_desc: "Fully reserved stablecoin pegged 1:1 to USD. Backed by USDC, SOL, and liquid assets.",
+                buy_title: "Buy UBCT with Bank Card", buy_desc: "Purchase UBCT stablecoin directly using Visa, Mastercard, Apple Pay, or Google Pay.",
+                amount_label: "Amount (USD)", price_hint: "1 UBCT = $1.00 USD", buy_btn: "Buy UBCT",
+                util1_title: "Stable Value", util1_desc: "Always 1 UBCT = $1 USD. No volatility, perfect for daily transactions.",
+                util2_title: "Liquidity Provider", util2_desc: "Provide liquidity to earn fees while maintaining stable value.",
+                util3_title: "Cross-border Payments", util3_desc: "Send value globally in seconds with near-zero fees.",
+                info_title: "Token Contract & Resources"
+            },
+            es: {
+                hero_title: "United Bank Chain Token", hero_desc: "Stablecoin totalmente respaldado 1:1 con USD.",
+                buy_title: "Compra UBCT con Tarjeta", buy_desc: "Compra UBCT directamente con Visa, Mastercard, Apple Pay o Google Pay.",
+                amount_label: "Monto (USD)", price_hint: "1 UBCT = $1.00 USD", buy_btn: "Comprar UBCT",
+                util1_title: "Valor Estable", util1_desc: "Siempre 1 UBCT = $1 USD. Sin volatilidad.",
+                util2_title: "Proveedor de Liquidez", util2_desc: "Gana comisiones manteniendo valor estable.",
+                util3_title: "Pagos Cross-border", util3_desc: "Envía valor globalmente en segundos.",
+                info_title: "Contrato y Recursos"
+            },
+            zh: {
+                hero_title: "联合银行链代币", hero_desc: "完全储备的稳定币，1:1锚定美元。",
+                buy_title: "用银行卡购买UBCT", buy_desc: "直接使用Visa、万事达卡、Apple Pay或Google Pay购买UBCT。",
+                amount_label: "金额 (美元)", price_hint: "1 UBCT = $1.00 美元", buy_btn: "购买UBCT",
+                util1_title: "稳定价值", util1_desc: "1 UBCT始终等于1美元，无波动。",
+                util2_title: "流动性提供者", util2_desc: "提供流动性赚取费用。",
+                util3_title: "跨境支付", util3_desc: "几秒钟内全球转账。",
+                info_title: "代币合约和资源"
+            },
+            ru: {
+                hero_title: "United Bank Chain Token", hero_desc: "Полностью обеспеченный стейблкоин, привязанный 1:1 к USD.",
+                buy_title: "Купить UBCT картой", buy_desc: "Покупайте UBCT напрямую с Visa, Mastercard, Apple Pay или Google Pay.",
+                amount_label: "Сумма (USD)", price_hint: "1 UBCT = $1.00 USD", buy_btn: "Купить UBCT",
+                util1_title: "Стабильная ценность", util1_desc: "Всегда 1 UBCT = $1 USD.",
+                util2_title: "Поставщик ликвидности", util2_desc: "Зарабатывайте комиссии.",
+                util3_title: "Кросс-граничные платежи", util3_desc: "Отправляйте ценность по всему миру за секунды.",
+                info_title: "Контракт и ресурсы"
+            },
+            ar: {
+                hero_title: "رمز بنك السلسلة المتحد", hero_desc: "عملة مستقرة مدعومة بالكامل 1:1 بالدولار.",
+                buy_title: "شراء UBCT ببطاقة", buy_desc: "اشترِ UBCT مباشرة باستخدام Visa أو Mastercard أو Apple Pay أو Google Pay.",
+                amount_label: "المبلغ (دولار)", price_hint: "1 UBCT = $1.00 دولار", buy_btn: "شراء UBCT",
+                util1_title: "قيمة مستقرة", util1_desc: "دائماً 1 UBCT = $1 دولار.",
+                util2_title: "مزود سيولة", util2_desc: "اكسب رسوماً مع الحفاظ على القيمة.",
+                util3_title: "مدفوعات عبر الحدود", util3_desc: "أرسل القيمة عالمياً في ثوانٍ.",
+                info_title: "عقد الرمز والموارد"
+            },
+            fr: {
+                hero_title: "United Bank Chain Token", hero_desc: "Stablecoin entièrement réservé indexé 1:1 sur USD.",
+                buy_title: "Acheter UBCT par carte", buy_desc: "Achetez UBCT directement avec Visa, Mastercard, Apple Pay ou Google Pay.",
+                amount_label: "Montant (USD)", price_hint: "1 UBCT = $1.00 USD", buy_btn: "Acheter UBCT",
+                util1_title: "Valeur stable", util1_desc: "Toujours 1 UBCT = $1 USD.",
+                util2_title: "Fournisseur de liquidité", util2_desc: "Gagnez des frais.",
+                util3_title: "Paiements transfrontaliers", util3_desc: "Envoyez de la valeur mondialement en secondes.",
+                info_title: "Contrat et ressources"
+            },
+            de: {
+                hero_title: "United Bank Chain Token", hero_desc: "Vollständig reservierter Stablecoin im Verhältnis 1:1 an USD gekoppelt.",
+                buy_title: "UBCT mit Karte kaufen", buy_desc: "Kaufen Sie UBCT direkt mit Visa, Mastercard, Apple Pay oder Google Pay.",
+                amount_label: "Betrag (USD)", price_hint: "1 UBCT = $1.00 USD", buy_btn: "UBCT kaufen",
+                util1_title: "Stabiler Wert", util1_desc: "Immer 1 UBCT = $1 USD.",
+                util2_title: "Liquiditätsanbieter", util2_desc: "Verdienen Sie Gebühren.",
+                util3_title: "Grenzüberschreitende Zahlungen", util3_desc: "Senden Sie Werte weltweit in Sekunden.",
+                info_title: "Token-Vertrag & Ressourcen"
+            },
+            ja: {
+                hero_title: "ユナイテッド・バンク・チェーン・トークン", hero_desc: "完全に準備されたステーブルコイン、1:1で米ドルにペッグ。",
+                buy_title: "UBCTをカードで購入", buy_desc: "Visa、Mastercard、Apple Pay、Google PayでUBCTを購入。",
+                amount_label: "金額 (USD)", price_hint: "1 UBCT = $1.00 USD", buy_btn: "UBCTを購入",
+                util1_title: "安定した価値", util1_desc: "常に1 UBCT = $1 USD。",
+                util2_title: "流動性プロバイダー", util2_desc: "手数料を稼ぐ。",
+                util3_title: "クロスボーダー決済", util3_desc: "世界中に数秒で価値を送金。",
+                info_title: "トークンコントラクトとリソース"
+            }
+        };
+
+        let currentLang = 'en';
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('hero-title').innerText = t.hero_title;
+            document.getElementById('hero-desc').innerText = t.hero_desc;
+            document.getElementById('buy-title').innerText = t.buy_title;
+            document.getElementById('buy-desc').innerText = t.buy_desc;
+            document.getElementById('amount-label').innerText = t.amount_label;
+            document.getElementById('price-hint').innerText = t.price_hint;
+            document.getElementById('buy-btn').innerText = t.buy_btn;
+            document.getElementById('util-1-title').innerText = t.util1_title;
+            document.getElementById('util-1-desc').innerText = t.util1_desc;
+            document.getElementById('util-2-title').innerText = t.util2_title;
+            document.getElementById('util-2-desc').innerText = t.util2_desc;
+            document.getElementById('util-3-title').innerText = t.util3_title;
+            document.getElementById('util-3-desc').innerText = t.util3_desc;
+            document.getElementById('info-title').innerText = t.info_title;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if(btn.dataset.lang === lang) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            localStorage.setItem('ubct_lang', lang);
+        }
+
+        function renderLanguageButtons() {
+            const container = document.getElementById('language-switcher');
+            const langs = ['en', 'es', 'zh', 'ru', 'ar', 'fr', 'de', 'ja'];
+            const langNames = { en:'EN', es:'ES', zh:'中文', ru:'RU', ar:'AR', fr:'FR', de:'DE', ja:'JP' };
+            container.innerHTML = '';
+            langs.forEach(lang => {
+                const btn = document.createElement('button');
+                btn.innerText = langNames[lang];
+                btn.dataset.lang = lang;
+                btn.className = `lang-btn text-sm ${currentLang === lang ? 'active' : ''}`;
+                btn.addEventListener('click', () => setLanguage(lang));
+                container.appendChild(btn);
+            });
+        }
+
+        const MOONPAY_TEST_API_KEY = "pk_test_5xHkHcH6SxT7sK8nV9jLkL2mN3pO4qR5sT6uV7wX8yZ";
+        const TOKEN_MINT = "J3Usczsn5c6YvymTxtGwFToMACdje7vPLeAXQqqELqab";
+
+        function initMoonpay(userWallet) {
+            const amount = parseFloat(document.getElementById('fiat-amount').value) || 100;
+            const widgetConfig = {
+                type: 'onramp',
+                apiKey: MOONPAY_TEST_API_KEY,
+                walletAddress: userWallet,
+                currencyCode: 'usdc_sol',
+                baseCurrencyCode: 'usd',
+                baseCurrencyAmount: amount,
+                theme: 'dark',
+                language: currentLang,
+                defaultPaymentMethod: 'credit_card',
+                uiConfig: { accentColor: '#008080' }
+            };
+            const container = document.getElementById('moonpay-container');
+            container.innerHTML = '';
+            const widget = MoonPay.createWidget(widgetConfig);
+            widget.mount(container);
+            widget.on('transaction_status_changed', (event) => {
+                if(event.type === 'transaction_status_changed' && event.payload?.status === 'completed') {
+                    alert(`Purchase completed! ${event.payload.currencyAmount} USDC sent. Swap USDC → UBCT on Meteora pool.`);
+                }
+            });
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        document.getElementById('buy-btn').addEventListener('click', () => {
+            let wallet = prompt("Enter your Solana wallet address (Phantom/Backpack):");
+            if(!wallet || wallet.trim() === "") { alert("Wallet address required."); return; }
+            initMoonpay(wallet.trim());
+        });
+
+        const savedLang = localStorage.getItem('ubct_lang');
+        if(savedLang && translations[savedLang]) currentLang = savedLang;
+        renderLanguageButtons();
+        setLanguage(currentLang);
+    </script>
+</body>
+</html>
